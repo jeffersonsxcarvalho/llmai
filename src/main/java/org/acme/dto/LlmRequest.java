@@ -6,13 +6,15 @@ public class LlmRequest {
 
     public String model;
     public List<LlmMessage> messages;
+    public boolean stream;
 
     public LlmRequest() {
 
     }
 
-    public LlmRequest(String model, List<LlmMessage> messages) {
+    public LlmRequest(String model, List<LlmMessage> messages, boolean stream) {
         this.model = model;
         this.messages = messages;
+        this.stream = stream;
     }
 }

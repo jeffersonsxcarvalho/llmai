@@ -1,14 +1,12 @@
 package org.acme.resource;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.acme.dto.ChatRequest;
 import org.acme.dto.ChatResponse;
 import org.acme.service.ChatService;
+import org.acme.service.ConversationService;
 
 import java.awt.*;
 
@@ -20,8 +18,21 @@ public class ChatResource {
     @Inject
     ChatService chatService;
 
+    @Inject
+    ConversationService conversationService;
+
     @POST
-    public ChatResponse chat(ChatRequest request) {
-        return chatService.chat(request);
+    @Path("/conversation")
+    public Long createConversation() {
+        return conversationService.createConversation();
+    }
+
+    @POST
+    @Path("/{conversationId}")
+    public ChatResponse chat(
+            @PathParam("conversationId") Long conversationId,
+            ChatRequest request
+    ) {
+        return chatService.chat(conversationId, request);
     }
 }

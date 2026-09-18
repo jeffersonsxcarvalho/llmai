@@ -19,8 +19,6 @@ public class LlmClient {
 
         LlmResponse response = llmApi.chat(request);
 
-        return response.response;
+        return response.message.content;
     }
-
-
 }
