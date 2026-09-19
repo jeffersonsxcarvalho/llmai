@@ -1,23 +1,23 @@
 package org.acme.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.entity.ConversationEntity;
 import org.acme.exception.ConversationNotFoundException;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import org.acme.repository.ConversationRepository;
 
 @ApplicationScoped
 public class ConversationService {
+
+    @Inject
+    ConversationRepository conversationRepository;
 
     @Transactional
     public Long createConversation() {
         ConversationEntity conversation = new ConversationEntity();
 
-        conversation.persist();
+        conversationRepository.save(conversation);
 
         return conversation.id;
     }
@@ -25,7 +25,7 @@ public class ConversationService {
     public ConversationEntity getConversation(Long id) {
 
         ConversationEntity conversation =
-                ConversationEntity.findById(id);
+                conversationRepository.findById(id);
 
         if(conversation == null) {
             throw new ConversationNotFoundException(id);

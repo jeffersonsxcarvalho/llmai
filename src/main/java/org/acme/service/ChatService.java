@@ -8,6 +8,7 @@ import org.acme.client.LlmClient;
 import org.acme.dto.*;
 import org.acme.entity.ConversationEntity;
 import org.acme.entity.MessageEntity;
+import org.acme.repository.MessageRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class ChatService {
     ConversationService conversationService;
 
     @Inject
-    MessageService messageService;
+    MessageRepository messageRepository;
 
     public ChatResponse chat(Long conversationId, ChatRequest request) {
 
@@ -38,9 +39,7 @@ public class ChatService {
                 """;
 
         Long nextSequence =
-                MessageEntity
-                        .find("conversation.id", conversation.id)
-                        .count() + 1;
+                messageRepository.countByConversation(conversationId) + 1;
 
         MessageEntity userMessage = new MessageEntity();
 
@@ -49,19 +48,14 @@ public class ChatService {
         userMessage.content = request.message;
         userMessage.sequence = nextSequence;
 
-        messageService.saveMessage(userMessage);
+        messageRepository.save(userMessage);
 
         List<MessageEntity> messageEntities =
-                MessageEntity
-                        .find(
-                                "conversation.id = ?1 order by sequence",
-                                conversation.id
-                        )
-                        .list();
+                messageRepository.findByConversation(conversationId);
 
         List<LlmMessage> messages = new ArrayList<>();
 
-        messages.add(new LlmMessage("System", systemPrompt));
+        messages.add(new LlmMessage("system", systemPrompt));
 
         for (MessageEntity entity : messageEntities){
             messages.add(
@@ -90,7 +84,7 @@ public class ChatService {
         assistantMessage.content = response;
         assistantMessage.sequence = nextSequence + 1;
 
-        messageService.saveMessage(assistantMessage);
+        messageRepository.save(assistantMessage);
 
         return new ChatResponse(response);
     }

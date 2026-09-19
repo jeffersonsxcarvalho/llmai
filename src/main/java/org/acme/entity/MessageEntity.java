@@ -1,12 +1,15 @@
 package org.acme.entity;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+
 import jakarta.persistence.*;
-import org.acme.service.Conversation;
 
 @Entity
 @Table(name="message")
-public class MessageEntity extends PanacheEntity {
+public class MessageEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
 
     @ManyToOne
     @JoinColumn(name = "conversation_id", nullable = false)
@@ -20,4 +23,6 @@ public class MessageEntity extends PanacheEntity {
 
     @Column(nullable = false)
     public Long sequence;
+
+    public MessageEntity(){}
 }
